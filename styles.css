@@ -108,6 +108,16 @@ button:hover {
   transform: scale(1.03);
 }
 
+.result-card {
+  background-color: #222; /* dark background for contrast */
+  color: white;           /* make all text inside white */
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 320px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  transition: transform 0.2s ease;
+}
 /* Existing thumbnail/card styles */
 .result-card {
   background-color: #222;
@@ -140,7 +150,6 @@ button:hover {
   z-index: 10;
   box-shadow: 0 0 5px rgba(0,0,0,0.7);
 }
-
 
 .result-card h3,
 .result-card p,
