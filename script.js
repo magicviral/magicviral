@@ -1,4 +1,4 @@
-const API_KEY = "AIzaSyDvjYH0UyTxioqSOhsnF9czRNERDr2Z2UY";  // replace with your real API key
+const API_KEY = "AIzaSyDvjYH0UyTxioqSOhsnF9czRNERDr2Z2UY"; // replace with your real API key
 const MAX_RESULTS = 12;
 
 function getPublishedAfter(option) {
