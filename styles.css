@@ -1,91 +1,135 @@
-/* Page background and font */
-html, body {
+body {
   background-color: #121212;
-  color: #fff;
+  color: white;
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 20px;
-  overflow-y: hidden; /* 🚫 Removes vertical scrollbar */
 }
 
 .container {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 h1 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  font-weight: bold;
+  font-size: 2rem;
 }
 
-/* Form styling */
-form {
+/* Top filter section with 3 columns, 2 rows */
+.filters {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px 20px;
+  margin-bottom: 30px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.filters label {
+  font-weight: bold;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.filters input,
+.filters select {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  background-color: #333;
+  color: white;
+}
+
+/* Search button - full width under filters */
+.search-button {
+  display: flex;
+  justify-content: center;
   margin-bottom: 30px;
 }
 
-.form-row {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-bottom: 15px;
-}
-
-.form-row.full-width {
-  justify-content: center;
-}
-
-.form-group {
-  flex: 1;
-  min-width: 200px;
-  display: flex;
-  flex-direction: column;
-}
-
-label {
-  font-weight: bold;
-  margin-bottom: 5px;
+.search-button button {
+  background-color: #2979ff;
   color: white;
-}
-
-input, select {
-  padding: 8px;
-  border-radius: 4px;
   border: none;
-  font-size: 16px;
-}
-
-/* Button styling */
-button {
-  background-color: #007bff;
-  color: white;
+  padding: 14px 40px;
+  font-size: 1.2rem;
   font-weight: bold;
+  border-radius: 8px;
   cursor: pointer;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 6px;
-  font-size: 18px;
-  width: 100%;
-  max-width: 200px;
   transition: background-color 0.3s ease;
 }
 
-button:hover {
-  background-color: #0056b3;
+.search-button button:hover {
+  background-color: #1c54b2;
 }
 
-/* Results grid layout */
+/* Results grid with 3 columns */
 .results-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 thumbnails per row */
-  gap: 16px;
-  justify-items: center;
-  padding-right: 0;
-  max-height: none;
-  overflow-y: visible;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
 }
 
+/* Single video card */
+.result-card {
+  background-color: #222;
+  border-radius: 10px;
+  overflow: hidden;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+  transition: transform 0.2s ease;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.result-card:hover {
+  transform: scale(1.05);
+}
+
+.result-card img {
+  width: 100%;
+  border-radius: 10px 10px 0 0;
+  display: block;
+}
+
+.result-card .details {
+  padding: 15px 18px;
+}
+
+.result-card h3 {
+  font-size: 1.1rem;
+  margin: 0 0 12px 0;
+  font-weight: bold;
+  line-height: 1.2;
+  min-height: 48px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.result-card p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+}
+.results-grid {
+  overflow-y: visible !important;
+  max-height: none !important;
+}
+
+/* Responsive layout for smaller screens */
 @media (max-width: 900px) {
   .results-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .filters {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -94,72 +138,10 @@ button:hover {
   .results-grid {
     grid-template-columns: 1fr;
   }
-}
-
-/* Result card design */
-.result-card {
-  background-color: #222;
-  color: white !important;
-  border-radius: 8px;
-  overflow: hidden;
-  width: 100%;
-  max-width: 320px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  transition: transform 0.2s ease;
-}
-
-.result-card:hover {
-  transform: scale(1.03);
-}
-
-.result-card * {
-  color: white !important; /* 🔥 Force all inside text to white */
-}
-
-.result-card a {
-  color: inherit;
-  text-decoration: none;
-}
-
-/* Video info inside cards */
-.result-card .video-info {
-  margin-top: 10px;
-  padding: 10px;
-}
-
-.result-card .video-info h3 {
-  font-size: 18px;
-  margin: 5px 0;
-}
-
-.result-card .video-info p {
-  font-size: 14px;
-  margin: 2px 0;
-  color: #ccc;
-}
-.results-grid {
-  overflow-y: visible !important;
-  max-height: none !important;
-}
-
-/* Message if no results */
-#results p {
-  font-size: 18px;
-  color: #f44336;
-  text-align: center;
-  margin-top: 20px;
-}
-
-/* 🔴 NEW badge for young channels */
-.new-badge {
-  background-color: red;
-  color: white !important;
-  font-weight: bold;
-  padding: 4px 8px;
-  font-size: 12px;
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  border-radius: 4px;
-  z-index: 10;
+  .filters {
+    grid-template-columns: 1fr;
+  }
+  .search-button button {
+    width: 100%;
+  }
 }
