@@ -1,4 +1,3 @@
-/* General container and layout */
 body {
   background-color: #121212;
   color: white;
@@ -12,37 +11,36 @@ body {
   margin: 0 auto;
 }
 
-/* Heading */
 h1 {
   text-align: center;
   margin-bottom: 20px;
 }
 
-/* Search controls layout */
+/* Search controls stacked vertically and centered */
 .search-controls {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  flex-direction: column;
+  gap: 15px;
   margin-bottom: 20px;
-  justify-content: center;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .search-controls label {
-  margin-right: 6px;
-  min-width: 100px;
-  line-height: 2;
-  white-space: nowrap;
+  font-weight: bold;
+  margin-bottom: 4px;
 }
 
 .search-controls select,
 .search-controls input {
-  padding: 6px 8px;
+  padding: 8px 10px;
   border-radius: 4px;
   border: none;
   font-size: 1rem;
   background-color: #333;
   color: white;
-  min-width: 150px;
+  width: 100%;
 }
 
 .search-controls button {
@@ -50,36 +48,35 @@ h1 {
   color: white;
   border: none;
   border-radius: 4px;
-  padding: 8px 16px;
+  padding: 12px;
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.3s ease;
-  min-width: 120px;
 }
 
 .search-controls button:hover {
   background-color: #e63235;
 }
 
-/* Results grid */
+/* Results grid with 3 columns */
 .results-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 18px;
   justify-items: center;
   padding-right: 10px;
 }
 
-/* Result card */
+/* Result card styling */
 .result-card {
   background-color: #222;
-  color: white;
   border-radius: 8px;
   overflow: hidden;
   width: 100%;
   max-width: 320px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.5);
   transition: transform 0.2s ease;
+  color: white;
 }
 
 .result-card:hover {
@@ -93,14 +90,13 @@ h1 {
   padding: 12px;
 }
 
-/* Thumbnail container with relative position for badge */
+/* Thumbnail container with relative positioning for badge */
 .thumbnail-container {
   position: relative;
   width: 100%;
   max-width: 320px;
 }
 
-/* Thumbnail image styling */
 .thumbnail-container img {
   width: 100%;
   border-radius: 6px;
@@ -131,7 +127,7 @@ h1 {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* limit to 2 lines */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
@@ -142,26 +138,15 @@ h1 {
   color: white;
 }
 
-/* Responsive adjustments */
+/* Responsive for tablets and phones */
 @media (max-width: 900px) {
   .results-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .search-controls {
-    justify-content: flex-start;
   }
 }
 
 @media (max-width: 600px) {
   .results-grid {
     grid-template-columns: 1fr;
-  }
-
-  .search-controls label,
-  .search-controls select,
-  .search-controls input,
-  .search-controls button {
-    min-width: 100%;
   }
 }
