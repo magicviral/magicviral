@@ -1,4 +1,4 @@
-const API_KEY = "AIzaSyCx9SLWIBvFsssaK7smMIlOfH9mv0WjNBM";  // Replace with your real API key
+const API_KEY = "AIzaSyCx9SLWIBvFsssaK7smMIlOfH9mv0WjNBM";  // Replace with your valid API key
 
 // Load YouTube video categories dynamically
 async function loadCategories() {
@@ -15,7 +15,6 @@ async function loadCategories() {
     select.innerHTML = '<option value="">All Topics</option>';
 
     data.items.forEach(cat => {
-      // Skip 'Film & Animation' category if you want, or keep all
       const option = document.createElement("option");
       option.value = cat.id;
       option.textContent = cat.snippet.title;
@@ -65,6 +64,12 @@ async function fetchChannelDetails(channelId) {
 }
 
 async function searchVideos() {
+  const query = document.getElementById("searchQuery").value.trim();
+  if (!query) {
+    document.getElementById("results").innerHTML = "<p>Please enter a search keyword.</p>";
+    return;
+  }
+
   const categoryId = document.getElementById("topicSelect").value;
   const uploadDate = document.getElementById("uploadDate").value;
   const minViews = parseInt(document.getElementById("minViews").value) || 0;
@@ -78,11 +83,9 @@ async function searchVideos() {
   url.searchParams.set("part", "snippet");
   url.searchParams.set("maxResults", "12");
   url.searchParams.set("type", "video");
+  url.searchParams.set("q", query);
   if (publishedAfter) url.searchParams.set("publishedAfter", publishedAfter);
   if (categoryId) url.searchParams.set("videoCategoryId", categoryId);
-
-  // For demo, no query string q, to just get videos in category, but you can add q param as needed
-  url.searchParams.set("q", ""); // empty to just filter by category
 
   const container = document.getElementById("results");
   container.innerHTML = "Loading...";
@@ -91,18 +94,21 @@ async function searchVideos() {
     const res = await fetch(url);
     const data = await res.json();
 
-    container.innerHTML = "";
-
     if (!data.items || data.items.length === 0) {
       container.innerHTML = "<p>No videos found.</p>";
       return;
     }
 
+    container.innerHTML = "";
+
     for (const item of data.items) {
       const vid = item.id.videoId;
       const snippet = item.snippet;
 
-      // Fetch channel info for subscriber count and creation date
+      // Check view count with a separate API call (optional, if you want strict filtering)
+      // Skipped here for simplicity; you can add it if needed.
+
+      // Fetch channel info
       const channelData = await fetchChannelDetails(snippet.channelId);
       if (!channelData) continue;
 
@@ -135,7 +141,6 @@ async function searchVideos() {
   }
 }
 
-// Load categories on page load
 window.onload = () => {
   loadCategories();
 };
