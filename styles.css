@@ -1,102 +1,79 @@
+/* General container and layout */
 body {
   background-color: #121212;
-  color: #fff;
+  color: white;
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 20px;
 }
 
 .container {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
+/* Heading */
 h1 {
   text-align: center;
   margin-bottom: 20px;
 }
 
-/* Form styling */
-form {
-  margin-bottom: 30px;
-}
-
-.form-row {
+/* Search controls layout */
+.search-controls {
   display: flex;
-  gap: 20px;
   flex-wrap: wrap;
-  margin-bottom: 15px;
-}
-
-.form-row.full-width {
+  gap: 12px;
+  margin-bottom: 20px;
   justify-content: center;
 }
 
-.form-group {
-  flex: 1;
-  min-width: 200px;
-  display: flex;
-  flex-direction: column;
+.search-controls label {
+  margin-right: 6px;
+  min-width: 100px;
+  line-height: 2;
+  white-space: nowrap;
 }
 
-label {
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-input, select {
-  padding: 8px;
+.search-controls select,
+.search-controls input {
+  padding: 6px 8px;
   border-radius: 4px;
   border: none;
-  font-size: 16px;
-}
-
-button {
-  background-color: #007bff;
+  font-size: 1rem;
+  background-color: #333;
   color: white;
-  font-weight: bold;
-  cursor: pointer;
-  padding: 12px 20px;
+  min-width: 150px;
+}
+
+.search-controls button {
+  background-color: #ff3b3f;
+  color: white;
   border: none;
-  border-radius: 6px;
-  font-size: 18px;
-  width: 100%;
-  max-width: 200px;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: bold;
   transition: background-color 0.3s ease;
+  min-width: 120px;
 }
 
-button:hover {
-  background-color: #0056b3;
+.search-controls button:hover {
+  background-color: #e63235;
 }
 
-/* Results Grid */
+/* Results grid */
 .results-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   justify-items: center;
-  /* Remove max-height and overflow so all results show without scroll */
   padding-right: 10px;
 }
 
-
-@media (max-width: 900px) {
-  .results-grid {
-    grid-template-columns: repeat(2, 1fr);
-    max-height: none;
-    overflow-y: visible;
-  }
-}
-
-@media (max-width: 600px) {
-  .results-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* Result card */
 .result-card {
-  background-color: #222; /* dark background for contrast */
-  color: white;           /* all text white */
+  background-color: #222;
+  color: white;
   border-radius: 8px;
   overflow: hidden;
   width: 100%;
@@ -105,45 +82,86 @@ button:hover {
   transition: transform 0.2s ease;
 }
 
-.result-card * {
-  color: white !important; /* force ALL text inside to be white */
+.result-card:hover {
+  transform: scale(1.05);
 }
 
 .result-card a {
-  color: inherit; /* links inherit white */
+  color: inherit;
   text-decoration: none;
+  display: block;
+  padding: 12px;
 }
 
-
-.result-card:hover {
-  transform: scale(1.03);
+/* Thumbnail container with relative position for badge */
+.thumbnail-container {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
 }
 
-.result-card img {
-  width: 320px;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 8px;
+/* Thumbnail image styling */
+.thumbnail-container img {
+  width: 100%;
+  border-radius: 6px;
+  display: block;
 }
 
-.result-card .video-info {
-  margin-top: 10px;
+/* Red NEW badge */
+.new-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background-color: red;
+  color: white;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 16px;
+  z-index: 10;
+  box-shadow: 0 0 5px rgba(0,0,0,0.7);
 }
 
-.result-card .video-info h3 {
-  font-size: 18px;
-  margin: 5px 0;
+/* Video title */
+.result-card h3 {
+  font-size: 1.1rem;
+  margin: 12px 0 6px 0;
+  line-height: 1.2;
+  min-height: 48px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* limit to 2 lines */
+  -webkit-box-orient: vertical;
 }
 
-.result-card .video-info p {
-  font-size: 14px;
-  margin: 2px 0;
-  color: #ccc;
+/* Channel name, views, upload date */
+.result-card p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: white;
 }
 
-#results p {
-  font-size: 18px;
-  color: #f44336;
-  text-align: center;
-  margin-top: 20px;
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .results-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .search-controls {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .search-controls label,
+  .search-controls select,
+  .search-controls input,
+  .search-controls button {
+    min-width: 100%;
+  }
 }
