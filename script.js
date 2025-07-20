@@ -1,124 +1,140 @@
-const API_KEY = "AIzaSyDvjYH0UyTxioqSOhsnF9czRNERDr2Z2UY"; // Replace with your real API key
+const API_KEY = "AIzaSyDvjYH0UyTxioqSOhsnF9czRNERDr2Z2UY";  // replace with your real API key
+const MAX_RESULTS = 12;
 
 function getPublishedAfter(option) {
   const now = new Date();
   switch (option) {
-    case "today":
+    case 'today':
       now.setHours(0, 0, 0, 0);
       break;
-    case "this_week":
+    case 'this_week':
       now.setDate(now.getDate() - 7);
       break;
-    case "this_month":
+    case 'this_month':
       now.setDate(now.getDate() - 30);
       break;
     default:
-      return "";
+      return '';
   }
   return now.toISOString();
 }
 
-function sortVideos(videos, sortBy) {
-  if (sortBy === "viewCountAsc") {
-    return videos.sort((a, b) => a.statistics.viewCount - b.statistics.viewCount);
-  } else if (sortBy === "viewCountDesc") {
-    return videos.sort((a, b) => b.statistics.viewCount - a.statistics.viewCount);
-  } else if (sortBy === "dateDesc") {
-    return videos.sort(
-      (a, b) => new Date(b.snippet.publishedAt) - new Date(a.snippet.publishedAt)
-    );
-  }
-  return videos;
+function formatNumber(num) {
+  if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + "M";
+  if (num >= 1_000) return (num / 1_000).toFixed(1) + "K";
+  return num;
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function formatDuration(isoDuration) {
+  // ISO 8601 duration parser for PTxxMxxS format
+  const match = isoDuration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+  let h = match[1] ? parseInt(match[1]) : 0;
+  let m = match[2] ? parseInt(match[2]) : 0;
+  let s = match[3] ? parseInt(match[3]) : 0;
+  return [h, m, s]
+    .map(v => v.toString().padStart(2, '0'))
+    .filter((v, i) => i !== 0 || v !== '00') // skip leading hours if 0
+    .join(':');
+}
+
+async function fetchVideoDetails(videoIds) {
+  const url = new URL("https://www.googleapis.com/youtube/v3/videos");
+  url.searchParams.set("key", API_KEY);
+  url.searchParams.set("id", videoIds.join(","));
+  url.searchParams.set("part", "statistics,contentDetails");
+  const res = await fetch(url);
+  const data = await res.json();
+  const map = {};
+  data.items.forEach(item => {
+    map[item.id] = {
+      viewCount: parseInt(item.statistics.viewCount || 0),
+      likeCount: parseInt(item.statistics.likeCount || 0),
+      commentCount: parseInt(item.statistics.commentCount || 0),
+      duration: item.contentDetails.duration
+    };
+  });
+  return map;
+}
+
+async function fetchChannelDetails(channelIds) {
+  const url = new URL("https://www.googleapis.com/youtube/v3/channels");
+  url.searchParams.set("key", API_KEY);
+  url.searchParams.set("id", channelIds.join(","));
+  url.searchParams.set("part", "statistics,snippet");
+  const res = await fetch(url);
+  const data = await res.json();
+  const map = {};
+  data.items.forEach(item => {
+    map[item.id] = {
+      subscriberCount: parseInt(item.statistics.subscriberCount || 0),
+      channelCreationDate: item.snippet.publishedAt
+    };
+  });
+  return map;
 }
 
 async function searchVideos() {
   const uploadDate = document.getElementById("uploadDate").value;
   const minViews = parseInt(document.getElementById("minViews").value) || 0;
-  const minSubs = parseInt(document.getElementById("minSubscribers").value) || 0;
-  const maxSubs = parseInt(document.getElementById("maxSubscribers").value) || Infinity;
-  const sortBy = document.getElementById("sortBy").value;
-
+  const minSubs = parseInt(document.getElementById("minSubs").value) || 0;
+  const maxSubs = parseInt(document.getElementById("maxSubs").value) || 1_000_000_000;
   const publishedAfter = getPublishedAfter(uploadDate);
-  const query = "viral ai faceless"; // your search keywords
+  const query = "viral ai faceless"; // example keywords, change as needed
+  const url = new URL("https://www.googleapis.com/youtube/v3/search");
 
-  // Step 1: Search videos by keyword
-  const searchUrl = new URL("https://www.googleapis.com/youtube/v3/search");
-  searchUrl.searchParams.set("key", API_KEY);
-  searchUrl.searchParams.set("q", query);
-  searchUrl.searchParams.set("part", "snippet");
-  searchUrl.searchParams.set("maxResults", "20");
-  searchUrl.searchParams.set("type", "video");
-  if (publishedAfter) searchUrl.searchParams.set("publishedAfter", publishedAfter);
+  url.searchParams.set("key", API_KEY);
+  url.searchParams.set("q", query);
+  url.searchParams.set("part", "snippet");
+  url.searchParams.set("maxResults", MAX_RESULTS.toString());
+  url.searchParams.set("type", "video");
+  if (publishedAfter) url.searchParams.set("publishedAfter", publishedAfter);
 
-  const searchRes = await fetch(searchUrl);
-  const searchData = await searchRes.json();
+  const res = await fetch(url);
+  const data = await res.json();
 
-  if (!searchData.items || searchData.items.length === 0) {
+  if (!data.items || data.items.length === 0) {
     document.getElementById("results").innerHTML = "<p>No videos found.</p>";
     return;
   }
 
-  // Collect video IDs to fetch statistics
-  const videoIds = searchData.items.map((item) => item.id.videoId).join(",");
+  // Extract video and channel IDs
+  const videoIds = data.items.map(item => item.id.videoId);
+  const channelIds = [...new Set(data.items.map(item => item.snippet.channelId))];
 
-  // Step 2: Fetch video statistics (views, subscriber counts need separate channel API call)
-  const videosUrl = new URL("https://www.googleapis.com/youtube/v3/videos");
-  videosUrl.searchParams.set("key", API_KEY);
-  videosUrl.searchParams.set("id", videoIds);
-  videosUrl.searchParams.set("part", "snippet,statistics");
+  // Fetch details
+  const videoDetails = await fetchVideoDetails(videoIds);
+  const channelDetails = await fetchChannelDetails(channelIds);
 
-  const videosRes = await fetch(videosUrl);
-  const videosData = await videosRes.json();
-
-  // Step 3: Fetch channel subscriber counts for each video
-  const channelIds = [...new Set(videosData.items.map((v) => v.snippet.channelId))];
-  const channelsUrl = new URL("https://www.googleapis.com/youtube/v3/channels");
-  channelsUrl.searchParams.set("key", API_KEY);
-  channelsUrl.searchParams.set("id", channelIds.join(","));
-  channelsUrl.searchParams.set("part", "statistics");
-
-  const channelsRes = await fetch(channelsUrl);
-  const channelsData = await channelsRes.json();
-
-  const subsMap = {};
-  channelsData.items.forEach((channel) => {
-    subsMap[channel.id] = parseInt(channel.statistics.subscriberCount || 0);
-  });
-
-  // Step 4: Filter videos by min/max subscribers and min views
-  let filteredVideos = videosData.items.filter((video) => {
-    const views = parseInt(video.statistics.viewCount || 0);
-    const subs = subsMap[video.snippet.channelId] || 0;
-    return views >= minViews && subs >= minSubs && subs <= maxSubs;
-  });
-
-  // Step 5: Sort videos according to selection
-  filteredVideos = sortVideos(filteredVideos, sortBy);
-
-  // Step 6: Display results
   const container = document.getElementById("results");
   container.innerHTML = "";
 
-  if (filteredVideos.length === 0) {
-    container.innerHTML = "<p>No videos matched your filters.</p>";
-    return;
-  }
+  data.items.forEach(item => {
+    const vid = item.id.videoId;
+    const snippet = item.snippet;
+    const vDetails = videoDetails[vid] || {};
+    const cDetails = channelDetails[snippet.channelId] || {};
 
-  filteredVideos.forEach((video) => {
-    const snippet = video.snippet;
-    const views = video.statistics.viewCount;
-    const subs = subsMap[snippet.channelId] || 0;
-    const publishedDate = new Date(snippet.publishedAt).toLocaleDateString();
+    // Filter by subscriber count
+    if (cDetails.subscriberCount < minSubs || cDetails.subscriberCount > maxSubs) return;
 
     const card = document.createElement("div");
     card.className = "result-card";
+
     card.innerHTML = `
-      <a href="https://www.youtube.com/watch?v=${video.id}" target="_blank" rel="noopener noreferrer">
-        <img src="${snippet.thumbnails.medium.url}" alt="Thumbnail" />
+      <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener noreferrer">
+        <img src="${snippet.thumbnails.medium.url}" alt="thumbnail" />
         <h3>${snippet.title}</h3>
-        <p>Channel: ${snippet.channelTitle} (Subscribers: ${subs.toLocaleString()})</p>
-        <p>Views: ${parseInt(views).toLocaleString()}</p>
-        <p class="published-date">Uploaded: ${publishedDate}</p>
+        <p>Channel: ${snippet.channelTitle}</p>
+        <p class="published-date">Video Published: ${formatDate(snippet.publishedAt)}</p>
+        <p>Views: ${formatNumber(vDetails.viewCount || 0)} | Likes: ${formatNumber(vDetails.likeCount || 0)}</p>
+        <p>Duration: ${formatDuration(vDetails.duration || "PT0S")}</p>
+        <p>Subscribers: ${formatNumber(cDetails.subscriberCount || 0)}</p>
+        <p>Channel Created: ${formatDate(cDetails.channelCreationDate || "")}</p>
       </a>
     `;
     container.appendChild(card);
