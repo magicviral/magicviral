@@ -5,7 +5,7 @@ html, body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 20px;
-  overflow-y: hidden; /* 🚫 Removes vertical scrollbar */
+  overflow-y: hidden; /* Removes vertical scrollbar */
 }
 
 .container {
@@ -106,6 +106,7 @@ button:hover {
   max-width: 320px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.5);
   transition: transform 0.2s ease;
+  position: relative;
 }
 
 .result-card:hover {
@@ -113,7 +114,7 @@ button:hover {
 }
 
 .result-card * {
-  color: white !important; /* 🔥 Force all inside text to white */
+  color: white !important;
 }
 
 .result-card a {
@@ -135,7 +136,7 @@ button:hover {
 .result-card .video-info p {
   font-size: 14px;
   margin: 2px 0;
-  color: #ccc;
+  color: white !important;
 }
 
 /* Message if no results */
@@ -146,7 +147,7 @@ button:hover {
   margin-top: 20px;
 }
 
-/* 🔴 NEW badge for young channels */
+/* NEW badge for young channels */
 .new-badge {
   background-color: red;
   color: white !important;
