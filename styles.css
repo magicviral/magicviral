@@ -1,38 +1,29 @@
-/* Reset & base */
-* {
-  box-sizing: border-box;
-}
-
 body {
   background-color: #121212;
   color: #eee;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
-  padding: 0;
+  padding: 20px;
 }
 
 .container {
-  max-width: 1200px;
-  margin: 20px auto;
-  padding: 0 15px;
+  max-width: 1000px;
+  margin: auto;
 }
 
 h1 {
   text-align: center;
   margin-bottom: 20px;
-  color: #fff;
 }
 
-/* Filters */
 label {
-  font-weight: bold;
   margin-right: 8px;
-  color: #ccc;
+  font-weight: bold;
 }
 
 select, input[type="number"] {
-  padding: 6px 8px;
   margin: 10px 15px 10px 0;
+  padding: 6px 8px;
   border-radius: 4px;
   border: none;
   background-color: #222;
@@ -48,7 +39,6 @@ button {
   font-size: 1rem;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
   margin-top: 10px;
 }
 
@@ -56,28 +46,26 @@ button:hover {
   background-color: #005ea3;
 }
 
-/* Results grid */
 .results-grid {
+  margin-top: 30px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  margin-top: 30px;
 }
 
-/* Card */
 .result-card {
   background-color: #1e1e1e;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 0 15px rgba(0,0,0,0.6);
   transition: transform 0.2s ease;
+  color: #eee;
 }
 
 .result-card:hover {
   transform: translateY(-5px);
 }
 
-/* Link & flex layout */
 .result-card a {
   display: flex;
   gap: 15px;
@@ -85,7 +73,6 @@ button:hover {
   text-decoration: none;
 }
 
-/* Thumbnail */
 .result-card img {
   width: 160px;
   height: 90px;
@@ -94,7 +81,6 @@ button:hover {
   flex-shrink: 0;
 }
 
-/* Video info */
 .video-info {
   flex: 1;
   display: flex;
@@ -116,7 +102,6 @@ button:hover {
   color: #ccc;
 }
 
-/* Responsive */
 @media (max-width: 900px) {
   .results-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -127,18 +112,15 @@ button:hover {
   .results-grid {
     grid-template-columns: 1fr;
   }
-
   .result-card a {
     flex-direction: column;
     align-items: center;
   }
-
   .result-card img {
     width: 100%;
     height: auto;
     border-radius: 10px 10px 0 0;
   }
-
   .video-info {
     padding: 10px 15px;
     text-align: center;

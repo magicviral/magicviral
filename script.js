@@ -1,96 +1,95 @@
-const API_KEY = "AIzaSyCx9SLWIBvFsssaK7smMIlOfH9mv0WjNBM";  // Replace with your key
-const MAX_RESULTS = 12;
+const API_KEY = "AIzaSyCx9SLWIBvFsssaK7smMIlOfH9mv0WjNBM";  // replace with your valid key
 
 function getPublishedAfter(option) {
   const now = new Date();
   switch (option) {
-    case 'today': now.setHours(0,0,0,0); break;
-    case 'this_week': now.setDate(now.getDate()-7); break;
-    case 'this_month': now.setDate(now.getDate()-30); break;
-    default: return '';
+    case 'today':
+      now.setHours(0, 0, 0, 0);
+      break;
+    case 'this_week':
+      now.setDate(now.getDate() - 7);
+      break;
+    case 'this_month':
+      now.setDate(now.getDate() - 30);
+      break;
+    default:
+      return '';
   }
   return now.toISOString();
 }
 
-function formatNumber(num) {
-  if (num >= 1_000_000) return (num/1_000_000).toFixed(1) + "M";
-  if (num >= 1_000) return (num/1_000).toFixed(1) + "K";
-  return num.toString();
-}
-
-function formatDateAgo(dateStr) {
-  const now = new Date();
-  const past = new Date(dateStr);
-  const diffMs = now - past;
-  const diffDays = Math.floor(diffMs / (1000*60*60*24));
-  if(diffDays === 0) return "Today";
-  if(diffDays === 1) return "1 day ago";
-  if(diffDays < 30) return `${diffDays} days ago`;
-  return past.toLocaleDateString();
-}
-
-function formatDuration(isoDuration) {
-  // ISO 8601 duration format PT#H#M#S
-  const match = isoDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
-  if (!match) return "N/A";
-  const hours = match[1] ? parseInt(match[1]) : 0;
-  const minutes = match[2] ? parseInt(match[2]) : 0;
-  const seconds = match[3] ? parseInt(match[3]) : 0;
-  let result = "";
-  if (hours > 0) result += hours + ":";
-  result += (hours > 0 && minutes < 10 ? "0" : "") + minutes + ":";
-  result += seconds < 10 ? "0" + seconds : seconds;
-  return result;
-}
-
-async function fetchVideoDetails(videoIds) {
-  if (videoIds.length === 0) return {};
-  const url = new URL("https://www.googleapis.com/youtube/v3/videos");
+async function fetchChannelDetails(channelId) {
+  const url = new URL("https://www.googleapis.com/youtube/v3/channels");
   url.searchParams.set("key", API_KEY);
-  url.searchParams.set("id", videoIds.join(","));
-  url.searchParams.set("part", "statistics,contentDetails");
+  url.searchParams.set("id", channelId);
+  url.searchParams.set("part", "snippet,statistics");
+
   const res = await fetch(url);
   const data = await res.json();
-  const map = {};
-  if(data.items) {
-    data.items.forEach(item => {
-      map[item.id] = {
-        viewCount: parseInt(item.statistics.viewCount || 0),
-        likeCount: parseInt(item.statistics.likeCount || 0),
-        duration: item.contentDetails.duration
-      };
-    });
+  if (data.items && data.items.length > 0) {
+    return data.items[0];
   }
-  return map;
+  return null;
 }
 
 async function searchVideos() {
-  const query = "music";  // simple test
+  const uploadDate = document.getElementById("uploadDate").value;
+  const minViews = parseInt(document.getElementById("minViews").value) || 0;
+  const minSubscribers = parseInt(document.getElementById("minSubscribers").value) || 0;
+  const maxSubscribers = parseInt(document.getElementById("maxSubscribers").value) || 1000000000;
+
+  const publishedAfter = getPublishedAfter(uploadDate);
+  const query = "music";  // broad test keyword, change as needed
   const url = new URL("https://www.googleapis.com/youtube/v3/search");
-  url.searchParams.set("key", "YOUR_API_KEY");
+
+  url.searchParams.set("key", API_KEY);
   url.searchParams.set("q", query);
   url.searchParams.set("part", "snippet");
-  url.searchParams.set("maxResults", "5");
+  url.searchParams.set("maxResults", "12");
   url.searchParams.set("type", "video");
+  if (publishedAfter) url.searchParams.set("publishedAfter", publishedAfter);
 
   const res = await fetch(url);
   const data = await res.json();
-
-  console.log(data);  // check console
 
   const container = document.getElementById("results");
   container.innerHTML = "";
 
-  if(!data.items || data.items.length === 0) {
+  if (!data.items || data.items.length === 0) {
     container.innerHTML = "<p>No videos found.</p>";
     return;
   }
 
-  data.items.forEach(item => {
+  for (const item of data.items) {
     const vid = item.id.videoId;
     const snippet = item.snippet;
+
+    // Fetch channel info for subscriber count and creation date
+    const channelData = await fetchChannelDetails(snippet.channelId);
+    if (!channelData) continue;
+
+    const subs = parseInt(channelData.statistics.subscriberCount || 0);
+    if (subs < minSubscribers || subs > maxSubscribers) continue;
+
+    const publishedDate = new Date(snippet.publishedAt).toLocaleDateString();
+    const channelCreation = new Date(channelData.snippet.publishedAt).toLocaleDateString();
+
+    // You can add view count filter later if you fetch videos statistics
+
     const card = document.createElement("div");
-    card.innerHTML = `<a href="https://www.youtube.com/watch?v=${vid}" target="_blank">${snippet.title}</a>`;
+    card.className = "result-card";
+    card.innerHTML = `
+      <a href="https://www.youtube.com/watch?v=${vid}" target="_blank">
+        <img src="${snippet.thumbnails.medium.url}" alt="thumbnail" />
+        <div class="video-info">
+          <h3>${snippet.title}</h3>
+          <p>Channel: ${snippet.channelTitle}</p>
+          <p>Subscribers: ${subs.toLocaleString()}</p>
+          <p>Channel Created: ${channelCreation}</p>
+          <p>Video Published: ${publishedDate}</p>
+        </div>
+      </a>
+    `;
     container.appendChild(card);
-  });
+  }
 }
