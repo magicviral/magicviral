@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>YouTube Viral Search</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>YouTube Viral Search</h1>
+
+    <label for="uploadDate">Upload Date:</label>
+    <select id="uploadDate">
+      <option value="">Any Time</option>
+      <option value="today">Today</option>
+      <option value="this_week">Last 7 Days</option>
+      <option value="this_month">Last 30 Days</option>
+    </select>
+
+    <label for="minViews">Min Views:</label>
+    <input type="number" id="minViews" placeholder="e.g. 10000" />
+
+    <label for="minSubscribers">Min Subscribers:</label>
+    <input type="number" id="minSubscribers" placeholder="e.g. 1000" />
+
+    <label for="maxSubscribers">Max Subscribers:</label>
+    <input type="number" id="maxSubscribers" placeholder="e.g. 1000000" />
+
+    <label for="sortOrder">Sort by Views:</label>
+    <select id="sortOrder">
+      <option value="">No Sorting</option>
+      <option value="views_desc">Views: High to Low</option>
+      <option value="views_asc">Views: Low to High</option>
+    </select>
+
+    <button onclick="searchVideos()">Search</button>
+
+    <div id="results" class="results-grid"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
