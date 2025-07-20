@@ -1,4 +1,4 @@
-const API_KEY = "AIzaSyBtJ-JtRrjCoIw9sXM7V1sMcAVt8yBmQVU";
+const API_KEY = "AIzaSyDvjYH0UyTxioqSOhsnF9czRNERDr2Z2UY";
 
 function getPublishedAfter(option) {
   const now = new Date();

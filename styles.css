@@ -1,96 +1,130 @@
+/* Basic reset and font */
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #121212;
-  color: #fff;
+  color: #eee;
 }
 
+/* Container for everything */
 .container {
-  max-width: 960px;
-  margin: 0 auto;
+  max-width: 800px;
+  margin: 30px auto;
   padding: 20px;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.7);
 }
 
+/* Page title */
 h1 {
   text-align: center;
-  color: #ffffff;
-  font-size: 28px;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
+  color: #f0f0f0;
 }
 
-label {
-  font-weight: 500;
-  margin-right: 10px;
+/* Flex row for label + input */
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: nowrap;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-input, select {
-  padding: 8px 10px;
-  margin: 10px 0;
+/* Label with fixed width */
+.input-row label {
+  min-width: 140px;
+  white-space: nowrap;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Inputs styling */
+input[type="number"],
+select {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 16px;
   border: none;
   border-radius: 4px;
-  background-color: #1f1f1f;
-  color: #ffffff;
+  background-color: #2a2a2a;
+  color: #eee;
+  outline: none;
+  transition: background-color 0.3s ease;
 }
 
+input[type="number"]:focus,
+select:focus {
+  background-color: #3b3b3b;
+}
+
+/* Search button styling */
 button {
-  padding: 10px 16px;
-  margin-top: 10px;
-  background-color: #ff4444;
-  color: #fff;
+  width: 100%;
+  padding: 12px 0;
+  font-size: 18px;
+  font-weight: 700;
+  background-color: #4caf50;
   border: none;
   border-radius: 5px;
+  color: white;
   cursor: pointer;
-  font-weight: bold;
+  margin-top: 20px;
   transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #e63636;
+  background-color: #45a049;
 }
 
+/* Results grid */
 .results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
   margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
 }
 
+/* Each result card */
 .result-card {
-  background-color: #1e1e1e;
-  border-radius: 10px;
+  background-color: #222;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 8px rgba(0,0,0,0.8);
   transition: transform 0.2s ease;
 }
 
 .result-card:hover {
-  transform: translateY(-5px);
+  transform: scale(1.03);
 }
 
+/* Thumbnail image */
 .result-card img {
   width: 100%;
   display: block;
-  border-bottom: 2px solid #333;
 }
 
-.result-card a {
-  display: block;
-  text-decoration: none;
-  padding: 12px;
-  background-color: rgba(0, 0, 0, 0.6); /* Slight overlay */
-}
-
+/* Video details */
 .result-card h3 {
   font-size: 16px;
-  margin: 5px 0 4px;
-  color: #ffffff; /* White title */
-  line-height: 1.4;
+  margin: 10px 12px 6px;
+  color: #fff;
 }
 
 .result-card p {
   font-size: 14px;
-  margin: 2px 0;
-  color: #ffffff; /* White channel name & date */
-  opacity: 0.9;
+  margin: 0 12px 12px;
+  color: #bbb;
+}
+
+/* Published date */
+.result-card .published-date {
+  font-size: 12px;
+  margin: 0 12px 12px;
+  color: #888;
+  font-style: italic;
 }
