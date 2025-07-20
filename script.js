@@ -88,73 +88,41 @@ async function fetchChannelDetails(channelIds) {
 }
 
 async function searchVideos() {
-  const uploadDate = document.getElementById("uploadDate").value || "";
-  const minViews = parseInt(document.getElementById("minViews").value) || 0;
-  const minSubs = parseInt(document.getElementById("minSubs").value);
-  const maxSubs = parseInt(document.getElementById("maxSubs").value);
-
-  // Safe default values for subscribers filter
-  const minSubscribers = isNaN(minSubs) ? 0 : minSubs;
-  const maxSubscribers = isNaN(maxSubs) ? 1_000_000_000 : maxSubs;
-
-  const publishedAfter = getPublishedAfter(uploadDate);
-  const query = "viral ai faceless"; // example search term, change as needed
+  const query = "viral ai faceless"; // simple search term
   const url = new URL("https://www.googleapis.com/youtube/v3/search");
-
   url.searchParams.set("key", API_KEY);
   url.searchParams.set("q", query);
   url.searchParams.set("part", "snippet");
-  url.searchParams.set("maxResults", MAX_RESULTS.toString());
+  url.searchParams.set("maxResults", "12");
   url.searchParams.set("type", "video");
-  if (publishedAfter) url.searchParams.set("publishedAfter", publishedAfter);
 
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-    console.log("Search API response:", data);
+  const res = await fetch(url);
+  const data = await res.json();
+  console.log("API Search result:", data);
 
-    if (!data.items || data.items.length === 0) {
-      document.getElementById("results").innerHTML = "<p>No videos found.</p>";
-      return;
-    }
+  const container = document.getElementById("results");
+  container.innerHTML = "";
 
-    const videoIds = data.items.map(item => item.id.videoId);
-    const channelIds = [...new Set(data.items.map(item => item.snippet.channelId))];
-
-    const videoDetails = await fetchVideoDetails(videoIds);
-    const channelDetails = await fetchChannelDetails(channelIds);
-
-    const container = document.getElementById("results");
-    container.innerHTML = "";
-
-    data.items.forEach(item => {
-      const vid = item.id.videoId;
-      const snippet = item.snippet;
-      const vDetails = videoDetails[vid] || {};
-      const cDetails = channelDetails[snippet.channelId] || {};
-
-      // Filter videos by subscriber count
-      if (cDetails.subscriberCount < minSubscribers || cDetails.subscriberCount > maxSubscribers) return;
-
-      const card = document.createElement("div");
-      card.className = "result-card";
-
-      card.innerHTML = `
-        <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener noreferrer">
-          <img src="${snippet.thumbnails.medium.url}" alt="thumbnail" />
-          <h3>${snippet.title}</h3>
-          <p>Channel: ${snippet.channelTitle}</p>
-          <p class="published-date">Video Published: ${formatDate(snippet.publishedAt)}</p>
-          <p>Views: ${formatNumber(vDetails.viewCount || 0)} | Likes: ${formatNumber(vDetails.likeCount || 0)}</p>
-          <p>Duration: ${formatDuration(vDetails.duration || "PT0S")}</p>
-          <p>Subscribers: ${formatNumber(cDetails.subscriberCount || 0)}</p>
-          <p>Channel Created: ${formatDate(cDetails.channelCreationDate)}</p>
-        </a>
-      `;
-      container.appendChild(card);
-    });
-  } catch (error) {
-    console.error("Error fetching videos:", error);
-    document.getElementById("results").innerHTML = "<p>Error fetching videos. Check console.</p>";
+  if (!data.items || data.items.length === 0) {
+    container.innerHTML = "<p>No videos found.</p>";
+    return;
   }
+
+  data.items.forEach(item => {
+    const vid = item.id.videoId;
+    const snippet = item.snippet;
+
+    const card = document.createElement("div");
+    card.className = "result-card";
+
+    card.innerHTML = `
+      <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener noreferrer">
+        <img src="${snippet.thumbnails.medium.url}" alt="thumbnail" />
+        <h3>${snippet.title}</h3>
+        <p>Channel: ${snippet.channelTitle}</p>
+        <p>Published: ${new Date(snippet.publishedAt).toLocaleDateString()}</p>
+      </a>
+    `;
+    container.appendChild(card);
+  });
 }
