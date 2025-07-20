@@ -96,7 +96,7 @@ button:hover {
 
 .result-card {
   background-color: #222; /* dark background for contrast */
-  color: white;           /* make all text inside white */
+  color: white;           /* all text white */
   border-radius: 8px;
   overflow: hidden;
   width: 100%;
@@ -105,14 +105,12 @@ button:hover {
   transition: transform 0.2s ease;
 }
 
-.result-card h3,
-.result-card p,
-.result-card span {
-  color: white; /* ensures all headings, paragraphs, spans are white */
+.result-card * {
+  color: white !important; /* force ALL text inside to be white */
 }
 
 .result-card a {
-  color: inherit; /* keep links white too */
+  color: inherit; /* links inherit white */
   text-decoration: none;
 }
 
