@@ -16,17 +16,36 @@ h1 {
   margin-bottom: 20px;
 }
 
-label {
-  display: block;
-  margin-top: 15px;
-  font-weight: bold;
+/* Form styling */
+form {
+  margin-bottom: 30px;
 }
 
-input, select, button {
-  width: 100%;
-  max-width: 340px;
+.form-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.form-row.full-width {
+  justify-content: center;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+input, select {
   padding: 8px;
-  margin-top: 5px;
   border-radius: 4px;
   border: none;
   font-size: 16px;
@@ -37,20 +56,25 @@ button {
   color: white;
   font-weight: bold;
   cursor: pointer;
-  margin-top: 20px;
-  max-width: 340px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 18px;
+  width: 100%;
+  max-width: 200px;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
   background-color: #0056b3;
 }
 
+/* Results Grid */
 .results-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
   justify-content: center;
-  margin-top: 30px;
 }
 
 .result-card {
@@ -94,4 +118,23 @@ button:hover {
   color: #f44336;
   text-align: center;
   margin-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .form-row {
+    flex-direction: column;
+  }
+
+  .form-group {
+    min-width: 100%;
+  }
+
+  .result-card {
+    width: 100%;
+  }
+
+  button {
+    max-width: 100%;
+  }
 }
