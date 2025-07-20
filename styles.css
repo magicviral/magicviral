@@ -99,9 +99,11 @@ button:hover {
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   justify-items: center;
-  /* Remove max-height and overflow so all results show without scroll */
+  max-height: calc(5 * 240px);  /* REMOVE or COMMENT THIS */
+  overflow-y: auto;             /* REMOVE or COMMENT THIS */
   padding-right: 10px;
 }
+
 
 .result-card:hover {
   transform: scale(1.03);
