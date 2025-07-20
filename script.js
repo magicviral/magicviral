@@ -64,109 +64,33 @@ async function fetchVideoDetails(videoIds) {
   return map;
 }
 
-async function fetchChannelDetails(channelIds) {
-  if(channelIds.length === 0) return {};
-  const url = new URL("https://www.googleapis.com/youtube/v3/channels");
-  url.searchParams.set("key", API_KEY);
-  url.searchParams.set("id", channelIds.join(","));
-  url.searchParams.set("part", "statistics,snippet");
-  const res = await fetch(url);
-  const data = await res.json();
-  const map = {};
-  if(data.items) {
-    data.items.forEach(item => {
-      map[item.id] = {
-        subscriberCount: parseInt(item.statistics.subscriberCount || 0),
-        channelCreationDate: item.snippet.publishedAt
-      };
-    });
-  }
-  return map;
-}
-
 async function searchVideos() {
-  const uploadDate = document.getElementById("uploadDate").value || "this_week";
-  const minViews = parseInt(document.getElementById("minViews").value) || 0;
-  const minSubs = parseInt(document.getElementById("minSubs").value);
-  const maxSubs = parseInt(document.getElementById("maxSubs").value);
-
-  const minSubscribers = isNaN(minSubs) ? 0 : minSubs;
-  const maxSubscribers = isNaN(maxSubs) ? 1000000000 : maxSubs;
-
-  const publishedAfter = getPublishedAfter(uploadDate);
-  const query = "music";
+  const query = "music";  // simple test
   const url = new URL("https://www.googleapis.com/youtube/v3/search");
-
-  url.searchParams.set("key", API_KEY);
+  url.searchParams.set("key", "YOUR_API_KEY");
   url.searchParams.set("q", query);
   url.searchParams.set("part", "snippet");
-  url.searchParams.set("maxResults", MAX_RESULTS.toString());
+  url.searchParams.set("maxResults", "5");
   url.searchParams.set("type", "video");
-  if (publishedAfter) url.searchParams.set("publishedAfter", publishedAfter);
 
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
+  const res = await fetch(url);
+  const data = await res.json();
 
-    if (!data.items || data.items.length === 0) {
-      document.getElementById("results").innerHTML = "<p>No videos found.</p>";
-      return;
-    }
+  console.log(data);  // check console
 
-    const videoIds = data.items.map(item => item.id.videoId);
-    const channelIds = [...new Set(data.items.map(item => item.snippet.channelId))];
+  const container = document.getElementById("results");
+  container.innerHTML = "";
 
-    const videoDetails = await fetchVideoDetails(videoIds);
-    const channelDetails = await fetchChannelDetails(channelIds);
-
-    const container = document.getElementById("results");
-    container.innerHTML = "";
-
-    let shownCount = 0;
-    data.items.forEach(item => {
-      const vid = item.id.videoId;
-      const snippet = item.snippet;
-      const vDetails = videoDetails[vid] || {};
-      const cDetails = channelDetails[snippet.channelId] || {};
-
-      // Filters
-      if ((vDetails.viewCount || 0) < minViews) return;
-      if (cDetails.subscriberCount < minSubscribers || cDetails.subscriberCount > maxSubscribers) return;
-
-      // Calculate view-to-subscriber ratio safely
-      let viewToSubRatio = "N/A";
-      if(cDetails.subscriberCount > 0) {
-        viewToSubRatio = (vDetails.viewCount / cDetails.subscriberCount).toFixed(2);
-      }
-
-      const card = document.createElement("div");
-      card.className = "result-card";
-
-      card.innerHTML = `
-        <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener noreferrer">
-          <img src="${snippet.thumbnails.medium.url}" alt="thumbnail" />
-          <div class="video-info">
-            <h3>${snippet.title}</h3>
-            <p><strong>Channel:</strong> ${snippet.channelTitle}</p>
-            <p><strong>Channel Created:</strong> ${new Date(cDetails.channelCreationDate).toLocaleDateString()}</p>
-            <p><strong>Published:</strong> ${formatDateAgo(snippet.publishedAt)}</p>
-            <p><strong>Duration:</strong> ${formatDuration(vDetails.duration)}</p>
-            <p><strong>Views:</strong> ${formatNumber(vDetails.viewCount || 0)}</p>
-            <p><strong>Likes:</strong> ${formatNumber(vDetails.likeCount || 0)}</p>
-            <p><strong>Subscribers:</strong> ${formatNumber(cDetails.subscriberCount || 0)}</p>
-            <p><strong>View/Sub Ratio:</strong> ${viewToSubRatio}</p>
-          </div>
-        </a>
-      `;
-      container.appendChild(card);
-      shownCount++;
-    });
-
-    if(shownCount === 0) {
-      container.innerHTML = "<p>No videos matched the filters.</p>";
-    }
-  } catch (e) {
-    console.error("Error fetching videos:", e);
-    document.getElementById("results").innerHTML = "<p>Error fetching videos. Check console.</p>";
+  if(!data.items || data.items.length === 0) {
+    container.innerHTML = "<p>No videos found.</p>";
+    return;
   }
+
+  data.items.forEach(item => {
+    const vid = item.id.videoId;
+    const snippet = item.snippet;
+    const card = document.createElement("div");
+    card.innerHTML = `<a href="https://www.youtube.com/watch?v=${vid}" target="_blank">${snippet.title}</a>`;
+    container.appendChild(card);
+  });
 }
