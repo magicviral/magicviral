@@ -13,116 +13,99 @@ body {
 
 h1 {
   text-align: center;
-  margin-bottom: 20px;
-}
-
-/* Search controls side-by-side with spacing */
-.search-controls {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.search-controls label {
+  margin-bottom: 30px;
   font-weight: bold;
-  margin-right: 6px;
-  white-space: nowrap;
-  align-self: center;
+  font-size: 2rem;
 }
 
-.search-controls select,
-.search-controls input {
-  padding: 8px 10px;
-  border-radius: 4px;
+/* Top filter section with 3 columns, 2 rows */
+.filters {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px 20px;
+  margin-bottom: 30px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.filters label {
+  font-weight: bold;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.filters input,
+.filters select {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
   border: none;
   font-size: 1rem;
   background-color: #333;
   color: white;
-  min-width: 120px;
 }
 
-.search-controls button {
-  background-color: #ff3b3f;
+/* Search button - full width under filters */
+.search-button {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.search-button button {
+  background-color: #2979ff;
   color: white;
   border: none;
-  border-radius: 4px;
-  padding: 12px 20px;
-  cursor: pointer;
+  padding: 14px 40px;
+  font-size: 1.2rem;
   font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
   transition: background-color 0.3s ease;
-  white-space: nowrap;
 }
 
-.search-controls button:hover {
-  background-color: #e63235;
+.search-button button:hover {
+  background-color: #1c54b2;
 }
 
 /* Results grid with 3 columns */
 .results-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  justify-items: center;
-  padding-right: 10px;
+  gap: 30px;
 }
 
-/* Result card styling */
+/* Single video card */
 .result-card {
   background-color: #222;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
-  width: 100%;
-  max-width: 320px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  transition: transform 0.2s ease;
   color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+  transition: transform 0.2s ease;
+  max-width: 360px;
+  margin: 0 auto;
 }
 
 .result-card:hover {
   transform: scale(1.05);
 }
 
-.result-card a {
-  color: inherit;
-  text-decoration: none;
-  display: block;
-  padding: 12px;
-}
-
-/* Thumbnail container with relative positioning for badge */
-.thumbnail-container {
-  position: relative;
+.result-card img {
   width: 100%;
-  max-width: 320px;
-}
-
-.thumbnail-container img {
-  width: 100%;
-  border-radius: 6px;
+  border-radius: 10px 10px 0 0;
   display: block;
 }
 
-/* Red NEW badge */
-.new-badge {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  background-color: red;
-  color: white;
-  font-weight: bold;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 16px;
-  z-index: 10;
-  box-shadow: 0 0 5px rgba(0,0,0,0.7);
+.result-card .details {
+  padding: 15px 18px;
 }
 
-/* Video title */
 .result-card h3 {
   font-size: 1.1rem;
-  margin: 12px 0 6px 0;
+  margin: 0 0 12px 0;
+  font-weight: bold;
   line-height: 1.2;
   min-height: 48px;
   overflow: hidden;
@@ -132,16 +115,17 @@ h1 {
   -webkit-box-orient: vertical;
 }
 
-/* Channel name, views, upload date */
 .result-card p {
-  margin: 4px 0;
+  margin: 5px 0;
   font-size: 0.9rem;
-  color: white;
 }
 
-/* Responsive for tablets and phones */
+/* Responsive layout for smaller screens */
 @media (max-width: 900px) {
   .results-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .filters {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -149,5 +133,11 @@ h1 {
 @media (max-width: 600px) {
   .results-grid {
     grid-template-columns: 1fr;
+  }
+  .filters {
+    grid-template-columns: 1fr;
+  }
+  .search-button button {
+    width: 100%;
   }
 }
