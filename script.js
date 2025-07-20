@@ -94,7 +94,7 @@ async function searchVideos() {
   const maxSubscribers = isNaN(maxSubs) ? 1000000000 : maxSubs;
 
   const publishedAfter = getPublishedAfter(uploadDate);
-  const query = "viral ai faceless";
+  const query = "music";
   const url = new URL("https://www.googleapis.com/youtube/v3/search");
 
   url.searchParams.set("key", API_KEY);
