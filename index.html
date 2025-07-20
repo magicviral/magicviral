@@ -10,6 +10,16 @@
   <div class="container">
     <h1>YouTube Viral Search</h1>
 
+    <label for="topicSelect">Topic:</label>
+    <select id="topicSelect">
+      <option value="music">Music</option>
+      <option value="gaming">Gaming</option>
+      <option value="news">News</option>
+      <option value="ai">AI</option>
+      <option value="faceless youtuber">Faceless YouTuber</option>
+      <option value="technology">Technology</option>
+    </select>
+
     <label for="uploadDate">Upload Date:</label>
     <select id="uploadDate">
       <option value="">Any Time</option>
@@ -19,13 +29,13 @@
     </select>
 
     <label for="minViews">Min Views:</label>
-    <input type="number" id="minViews" value="0" min="0" />
+    <input type="number" id="minViews" placeholder="e.g. 10000" value="1000" />
 
     <label for="minSubscribers">Min Subscribers:</label>
-    <input type="number" id="minSubscribers" value="0" min="0" />
+    <input type="number" id="minSubscribers" placeholder="e.g. 0" value="0" />
 
     <label for="maxSubscribers">Max Subscribers:</label>
-    <input type="number" id="maxSubscribers" value="1000000000" min="0" />
+    <input type="number" id="maxSubscribers" placeholder="e.g. 10000" value="10000" />
 
     <button onclick="searchVideos()">Search</button>
 

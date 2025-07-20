@@ -1,4 +1,4 @@
-const API_KEY = "AIzaSyCx9SLWIBvFsssaK7smMIlOfH9mv0WjNBM";  // replace with your valid key
+const API_KEY = "AIzaSyCx9SLWIBvFsssaK7smMIlOfH9mv0WjNBM";  // Replace with your actual API key
 
 function getPublishedAfter(option) {
   const now = new Date();
@@ -33,17 +33,17 @@ async function fetchChannelDetails(channelId) {
 }
 
 async function searchVideos() {
+  const topic = document.getElementById("topicSelect").value;
   const uploadDate = document.getElementById("uploadDate").value;
   const minViews = parseInt(document.getElementById("minViews").value) || 0;
   const minSubscribers = parseInt(document.getElementById("minSubscribers").value) || 0;
   const maxSubscribers = parseInt(document.getElementById("maxSubscribers").value) || 1000000000;
 
   const publishedAfter = getPublishedAfter(uploadDate);
-  const query = "music";  // broad test keyword, change as needed
-  const url = new URL("https://www.googleapis.com/youtube/v3/search");
 
+  const url = new URL("https://www.googleapis.com/youtube/v3/search");
   url.searchParams.set("key", API_KEY);
-  url.searchParams.set("q", query);
+  url.searchParams.set("q", topic);
   url.searchParams.set("part", "snippet");
   url.searchParams.set("maxResults", "12");
   url.searchParams.set("type", "video");
@@ -73,8 +73,6 @@ async function searchVideos() {
 
     const publishedDate = new Date(snippet.publishedAt).toLocaleDateString();
     const channelCreation = new Date(channelData.snippet.publishedAt).toLocaleDateString();
-
-    // You can add view count filter later if you fetch videos statistics
 
     const card = document.createElement("div");
     card.className = "result-card";
