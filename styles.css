@@ -108,12 +108,28 @@ button:hover {
   transform: scale(1.03);
 }
 
-.result-card img {
-  width: 320px;
-  height: 180px;
-  object-fit: cover;
+.result-card {
+  background-color: #222; /* dark background for contrast */
+  color: white;           /* make all text inside white */
   border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 320px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  transition: transform 0.2s ease;
 }
+
+.result-card h3,
+.result-card p,
+.result-card span {
+  color: white; /* ensures all headings, paragraphs, spans are white */
+}
+
+.result-card a {
+  color: inherit; /* keep links white too */
+  text-decoration: none;
+}
+
 
 .result-card .video-info {
   margin-top: 10px;
