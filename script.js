@@ -1,137 +1,169 @@
-const API_KEY = "AIzaSyCx9SLWIBvFsssaK7smMIlOfH9mv0WjNBM"; // replace with your key
+const API_KEY = "AIzaSyCx9SLWIBvFsssaK7smMIlOfH9mv0WjNBM"; // Replace with your actual YouTube API key
+
+const YOUTUBE_CATEGORIES = {
+  1: "Film & Animation",
+  2: "Autos & Vehicles",
+  10: "Music",
+  15: "Pets & Animals",
+  17: "Sports",
+  18: "Short Movies",
+  19: "Travel & Events",
+  20: "Gaming",
+  21: "Videoblogging",
+  22: "People & Blogs",
+  23: "Comedy",
+  24: "Entertainment",
+  25: "News & Politics",
+  26: "Howto & Style",
+  27: "Education",
+  28: "Science & Technology",
+  29: "Nonprofits & Activism",
+  30: "Movies",
+  31: "Anime/Animation",
+  32: "Action/Adventure",
+  33: "Classics",
+  34: "Comedy",
+  35: "Documentary",
+  36: "Drama",
+  37: "Family",
+  38: "Foreign",
+  39: "Horror",
+  40: "Sci-Fi/Fantasy",
+  41: "Thriller",
+  42: "Shorts",
+  43: "Shows",
+  44: "Trailers"
+};
+
+function populateCategorySelect() {
+  const select = document.getElementById("topicSelect");
+  select.innerHTML = `<option value="">Any Category</option>`;
+  for (const [id, name] of Object.entries(YOUTUBE_CATEGORIES)) {
+    select.innerHTML += `<option value="${id}">${name}</option>`;
+  }
+}
 
 function getPublishedAfter(option) {
   const now = new Date();
   switch (option) {
-    case "today":
+    case 'today':
       now.setHours(0, 0, 0, 0);
       break;
-    case "this_week":
+    case 'this_week':
       now.setDate(now.getDate() - 7);
       break;
-    case "this_month":
+    case 'this_month':
       now.setDate(now.getDate() - 30);
       break;
     default:
-      return "";
+      return '';
   }
   return now.toISOString();
 }
 
-function formatNumber(num) {
-  if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + "M";
-  if (num >= 1_000) return (num / 1_000).toFixed(1) + "K";
-  return num.toString();
-}
-
-async function fetchVideoDetails(videoIds) {
-  const url = new URL("https://www.googleapis.com/youtube/v3/videos");
-  url.searchParams.set("key", API_KEY);
-  url.searchParams.set("id", videoIds.join(","));
-  url.searchParams.set("part", "statistics");
-  const res = await fetch(url);
-  const data = await res.json();
-  // Map videoId => viewCount
-  const statsMap = {};
-  data.items.forEach((item) => {
-    statsMap[item.id] = item.statistics.viewCount;
-  });
-  return statsMap;
-}
-
-async function fetchChannelDetails(channelIds) {
+async function getChannelDetails(channelId) {
   const url = new URL("https://www.googleapis.com/youtube/v3/channels");
   url.searchParams.set("key", API_KEY);
-  url.searchParams.set("id", channelIds.join(","));
-  url.searchParams.set("part", "snippet");
+  url.searchParams.set("part", "statistics,snippet");
+  url.searchParams.set("id", channelId);
+
   const res = await fetch(url);
   const data = await res.json();
-  // Map channelId => channel creation date
-  const channelMap = {};
-  data.items.forEach((item) => {
-    channelMap[item.id] = item.snippet.publishedAt;
-  });
-  return channelMap;
+
+  if (data.items && data.items.length > 0) {
+    return data.items[0];
+  } else {
+    return null;
+  }
 }
 
 async function searchVideos() {
+  const query = document.getElementById("searchQuery").value.trim();
   const uploadDate = document.getElementById("uploadDate").value;
   const minViews = parseInt(document.getElementById("minViews").value) || 0;
-  const minSubs = parseInt(document.getElementById("minSubs").value) || 0;
-  const maxSubs = parseInt(document.getElementById("maxSubs").value) || 0;
-  const sortOrder = document.getElementById("sortOrder").value;
-  const publishedAfter = getPublishedAfter(uploadDate);
-  const topic = document.getElementById("topic").value || "viral ai faceless";
+  const minSubs = parseInt(document.getElementById("minSubscribers").value) || 0;
+  const maxSubs = parseInt(document.getElementById("maxSubscribers").value);
+  const categoryId = document.getElementById("topicSelect").value;
 
-  // Search API
+  const publishedAfter = getPublishedAfter(uploadDate);
+
+  // Build search URL
   const searchUrl = new URL("https://www.googleapis.com/youtube/v3/search");
   searchUrl.searchParams.set("key", API_KEY);
-  searchUrl.searchParams.set("q", topic);
+  searchUrl.searchParams.set("q", query);
   searchUrl.searchParams.set("part", "snippet");
-  searchUrl.searchParams.set("maxResults", "15");
+  searchUrl.searchParams.set("maxResults", "25");
   searchUrl.searchParams.set("type", "video");
   if (publishedAfter) searchUrl.searchParams.set("publishedAfter", publishedAfter);
+  if (categoryId) searchUrl.searchParams.set("videoCategoryId", categoryId);
 
-  const res = await fetch(searchUrl);
-  const data = await res.json();
+  const resultsContainer = document.getElementById("results");
+  resultsContainer.innerHTML = `<p>Loading...</p>`;
 
-  if (!data.items || data.items.length === 0) {
-    document.getElementById("results").innerHTML = "<p>No results found.</p>";
-    return;
-  }
+  try {
+    const res = await fetch(searchUrl);
+    const data = await res.json();
 
-  // Collect videoIds and channelIds for detail fetch
-  const videoIds = data.items.map((item) => item.id.videoId);
-  const channelIds = [...new Set(data.items.map((item) => item.snippet.channelId))];
+    if (!data.items || data.items.length === 0) {
+      resultsContainer.innerHTML = `<p>No results found.</p>`;
+      return;
+    }
 
-  // Fetch stats & channels details
-  const videoStats = await fetchVideoDetails(videoIds);
-  const channelDetails = await fetchChannelDetails(channelIds);
+    // Limit to max 15 results (3 columns x 5 rows)
+    const maxResultsToShow = 15;
+    const itemsToShow = data.items.slice(0, maxResultsToShow);
 
-  // Filter videos by subscriber count
-  // To get subscriber counts, you'd have to call channels API again with statistics part.
-  // For demo simplicity, let's skip that or you can add if needed.
+    resultsContainer.innerHTML = "";
 
-  // Prepare results container
-  const container = document.getElementById("results");
-  container.innerHTML = "";
+    // For each video, get channel details (for subscriber count, channel creation date)
+    for (const item of itemsToShow) {
+      const vid = item.id.videoId;
+      const snippet = item.snippet;
+      const channelId = snippet.channelId;
 
-  // Current date for comparison
-  const now = new Date();
+      const channelDetails = await getChannelDetails(channelId);
 
-  // Build video cards with views and "NEW" badge if channel < 6 months
-  data.items.forEach((item) => {
-    const vid = item.id.videoId;
-    const snippet = item.snippet;
-    const views = videoStats[vid] ? parseInt(videoStats[vid]) : 0;
-    const channelCreationDate = new Date(channelDetails[snippet.channelId]);
-    const monthsSinceCreation = (now.getFullYear() - channelCreationDate.getFullYear()) * 12 + (now.getMonth() - channelCreationDate.getMonth());
+      // Check subscriber count filtering
+      let subsCount = 0;
+      let channelCreatedDate = "N/A";
 
-    // Skip video if views < minViews (optional)
-    if (views < minViews) return;
+      if (channelDetails) {
+        subsCount = parseInt(channelDetails.statistics.subscriberCount) || 0;
+        channelCreatedDate = new Date(channelDetails.snippet.publishedAt).toLocaleDateString();
+      }
 
-    // Check for NEW badge (channel < 6 months)
-    const isNewChannel = monthsSinceCreation < 6;
+      if (subsCount < minSubs) continue;
+      if (maxSubs !== 0 && subsCount > maxSubs) continue;
 
-    // Format date posted nicely
-    const publishedDate = new Date(snippet.publishedAt).toLocaleDateString();
+      // Build video card
+      const card = document.createElement("div");
+      card.className = "result-card";
 
-    const card = document.createElement("div");
-    card.className = "result-card";
-
-    card.innerHTML = `
-      <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener noreferrer">
-        <div class="thumbnail-container">
+      card.innerHTML = `
+        <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener noreferrer">
           <img src="${snippet.thumbnails.medium.url}" alt="thumbnail" />
-          ${isNewChannel ? `<div class="new-badge">NEW</div>` : ""}
-        </div>
-        <h3>${snippet.title}</h3>
-        <p>${snippet.channelTitle}</p>
-        <p>Views: ${formatNumber(views)}</p>
-        <p>Uploaded: ${publishedDate}</p>
-      </a>
-    `;
+          <div class="video-info">
+            <h3>${snippet.title}</h3>
+            <p>Channel: ${snippet.channelTitle}</p>
+            <p>Subscribers: ${subsCount.toLocaleString()}</p>
+            <p>Channel Created: ${channelCreatedDate}</p>
+            <p>Published: ${new Date(snippet.publishedAt).toLocaleDateString()}</p>
+          </div>
+        </a>
+      `;
 
-    container.appendChild(card);
-  });
+      resultsContainer.appendChild(card);
+    }
+
+    if (resultsContainer.innerHTML.trim() === "") {
+      resultsContainer.innerHTML = `<p>No results matching subscriber filters.</p>`;
+    }
+
+  } catch (error) {
+    resultsContainer.innerHTML = `<p>Error fetching data: ${error.message}</p>`;
+  }
 }
+
+window.onload = () => {
+  populateCategorySelect();
+};
