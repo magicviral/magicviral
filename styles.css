@@ -71,17 +71,34 @@ button:hover {
 
 /* Results Grid */
 .results-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  justify-content: center;
+  justify-items: center;
+  max-height: calc(5 * 240px);
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+@media (max-width: 900px) {
+  .results-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-height: none;
+    overflow-y: visible;
+  }
+}
+
+@media (max-width: 600px) {
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .result-card {
   background: #222;
   border-radius: 8px;
   padding: 10px;
-  width: 340px;
+  width: 320px;
   color: white;
   box-shadow: 0 2px 8px rgba(0,0,0,0.7);
   transition: transform 0.2s ease;
@@ -118,23 +135,4 @@ button:hover {
   color: #f44336;
   text-align: center;
   margin-top: 20px;
-}
-
-/* Responsive */
-@media (max-width: 700px) {
-  .form-row {
-    flex-direction: column;
-  }
-
-  .form-group {
-    min-width: 100%;
-  }
-
-  .result-card {
-    width: 100%;
-  }
-
-  button {
-    max-width: 100%;
-  }
 }
