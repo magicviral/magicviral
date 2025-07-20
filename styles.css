@@ -1,11 +1,9 @@
-/* Page background and font */
-html, body {
+body {
   background-color: #121212;
   color: #fff;
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 20px;
-  overflow-y: hidden; /* 🚫 Removes vertical scrollbar */
 }
 
 .container {
@@ -44,7 +42,6 @@ form {
 label {
   font-weight: bold;
   margin-bottom: 5px;
-  color: white;
 }
 
 input, select {
@@ -54,7 +51,6 @@ input, select {
   font-size: 16px;
 }
 
-/* Button styling */
 button {
   background-color: #007bff;
   color: white;
@@ -73,20 +69,22 @@ button:hover {
   background-color: #0056b3;
 }
 
-/* Results grid layout */
+/* Results Grid */
 .results-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 thumbnails per row */
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   justify-items: center;
-  padding-right: 0;
-  max-height: none;
-  overflow-y: visible;
+  max-height: calc(5 * 240px);
+  overflow-y: auto;
+  padding-right: 10px;
 }
 
 @media (max-width: 900px) {
   .results-grid {
     grid-template-columns: repeat(2, 1fr);
+    max-height: none;
+    overflow-y: visible;
   }
 }
 
@@ -96,10 +94,23 @@ button:hover {
   }
 }
 
-/* Result card design */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  justify-items: center;
+  padding-right: 10px;
+}
+
+
+
+.result-card:hover {
+  transform: scale(1.03);
+}
+
 .result-card {
-  background-color: #222;
-  color: white !important;
+  background-color: #222; /* dark background for contrast */
+  color: white;           /* all text white */
   border-radius: 8px;
   overflow: hidden;
   width: 100%;
@@ -108,23 +119,24 @@ button:hover {
   transition: transform 0.2s ease;
 }
 
-.result-card:hover {
-  transform: scale(1.03);
-}
-
 .result-card * {
-  color: white !important; /* 🔥 Force all inside text to white */
+  color: white !important; /* force ALL text inside to be white */
 }
 
 .result-card a {
-  color: inherit;
+  color: inherit; /* links inherit white */
   text-decoration: none;
 }
 
-/* Video info inside cards */
+
+.result-card a {
+  color: inherit; /* keep links white too */
+  text-decoration: none;
+}
+
+
 .result-card .video-info {
   margin-top: 10px;
-  padding: 10px;
 }
 
 .result-card .video-info h3 {
@@ -138,24 +150,9 @@ button:hover {
   color: #ccc;
 }
 
-/* Message if no results */
 #results p {
   font-size: 18px;
   color: #f44336;
   text-align: center;
   margin-top: 20px;
-}
-
-/* 🔴 NEW badge for young channels */
-.new-badge {
-  background-color: red;
-  color: white !important;
-  font-weight: bold;
-  padding: 4px 8px;
-  font-size: 12px;
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  border-radius: 4px;
-  z-index: 10;
 }
