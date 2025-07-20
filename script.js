@@ -15,11 +15,32 @@ function getPublishedAfter(option) {
 function formatNumber(num) {
   if (num >= 1_000_000) return (num/1_000_000).toFixed(1) + "M";
   if (num >= 1_000) return (num/1_000).toFixed(1) + "K";
-  return num;
+  return num.toString();
 }
 
-function formatDate(dateStr) {
-  return dateStr ? new Date(dateStr).toLocaleDateString() : "N/A";
+function formatDateAgo(dateStr) {
+  const now = new Date();
+  const past = new Date(dateStr);
+  const diffMs = now - past;
+  const diffDays = Math.floor(diffMs / (1000*60*60*24));
+  if(diffDays === 0) return "Today";
+  if(diffDays === 1) return "1 day ago";
+  if(diffDays < 30) return `${diffDays} days ago`;
+  return past.toLocaleDateString();
+}
+
+function formatDuration(isoDuration) {
+  // ISO 8601 duration format PT#H#M#S
+  const match = isoDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!match) return "N/A";
+  const hours = match[1] ? parseInt(match[1]) : 0;
+  const minutes = match[2] ? parseInt(match[2]) : 0;
+  const seconds = match[3] ? parseInt(match[3]) : 0;
+  let result = "";
+  if (hours > 0) result += hours + ":";
+  result += (hours > 0 && minutes < 10 ? "0" : "") + minutes + ":";
+  result += seconds < 10 ? "0" + seconds : seconds;
+  return result;
 }
 
 async function fetchVideoDetails(videoIds) {
@@ -30,7 +51,6 @@ async function fetchVideoDetails(videoIds) {
   url.searchParams.set("part", "statistics,contentDetails");
   const res = await fetch(url);
   const data = await res.json();
-  console.log("Video details response:", data);
   const map = {};
   if(data.items) {
     data.items.forEach(item => {
@@ -52,7 +72,6 @@ async function fetchChannelDetails(channelIds) {
   url.searchParams.set("part", "statistics,snippet");
   const res = await fetch(url);
   const data = await res.json();
-  console.log("Channel details response:", data);
   const map = {};
   if(data.items) {
     data.items.forEach(item => {
@@ -88,14 +107,11 @@ async function searchVideos() {
   try {
     const res = await fetch(url);
     const data = await res.json();
-    console.log("Search API response:", data);
 
     if (!data.items || data.items.length === 0) {
       document.getElementById("results").innerHTML = "<p>No videos found.</p>";
       return;
     }
-
-    console.log("Videos from API before filtering:", data.items);
 
     const videoIds = data.items.map(item => item.id.videoId);
     const channelIds = [...new Set(data.items.map(item => item.snippet.channelId))];
@@ -113,9 +129,15 @@ async function searchVideos() {
       const vDetails = videoDetails[vid] || {};
       const cDetails = channelDetails[snippet.channelId] || {};
 
-      // LOOSEN FILTERS for testing
+      // Filters
       if ((vDetails.viewCount || 0) < minViews) return;
       if (cDetails.subscriberCount < minSubscribers || cDetails.subscriberCount > maxSubscribers) return;
+
+      // Calculate view-to-subscriber ratio safely
+      let viewToSubRatio = "N/A";
+      if(cDetails.subscriberCount > 0) {
+        viewToSubRatio = (vDetails.viewCount / cDetails.subscriberCount).toFixed(2);
+      }
 
       const card = document.createElement("div");
       card.className = "result-card";
@@ -123,12 +145,17 @@ async function searchVideos() {
       card.innerHTML = `
         <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener noreferrer">
           <img src="${snippet.thumbnails.medium.url}" alt="thumbnail" />
-          <h3>${snippet.title}</h3>
-          <p>Channel: ${snippet.channelTitle}</p>
-          <p>Published: ${formatDate(snippet.publishedAt)}</p>
-          <p>Views: ${formatNumber(vDetails.viewCount || 0)}</p>
-          <p>Subscribers: ${formatNumber(cDetails.subscriberCount || 0)}</p>
-          <p>Channel Created: ${formatDate(cDetails.channelCreationDate)}</p>
+          <div class="video-info">
+            <h3>${snippet.title}</h3>
+            <p><strong>Channel:</strong> ${snippet.channelTitle}</p>
+            <p><strong>Channel Created:</strong> ${new Date(cDetails.channelCreationDate).toLocaleDateString()}</p>
+            <p><strong>Published:</strong> ${formatDateAgo(snippet.publishedAt)}</p>
+            <p><strong>Duration:</strong> ${formatDuration(vDetails.duration)}</p>
+            <p><strong>Views:</strong> ${formatNumber(vDetails.viewCount || 0)}</p>
+            <p><strong>Likes:</strong> ${formatNumber(vDetails.likeCount || 0)}</p>
+            <p><strong>Subscribers:</strong> ${formatNumber(cDetails.subscriberCount || 0)}</p>
+            <p><strong>View/Sub Ratio:</strong> ${viewToSubRatio}</p>
+          </div>
         </a>
       `;
       container.appendChild(card);
