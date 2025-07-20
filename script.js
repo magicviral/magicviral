@@ -64,6 +64,9 @@ async function searchVideos() {
     const vid = item.id.videoId;
     const snippet = item.snippet;
 
+    // Skip if views not fetched yet (optional, or handle separately)
+    // Note: YouTube search API does not return viewCount here, would need separate video details API call
+
     // Fetch channel info for subscriber count and creation date
     const channelData = await fetchChannelDetails(snippet.channelId);
     if (!channelData) continue;
