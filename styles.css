@@ -137,6 +137,10 @@ button:hover {
   margin: 2px 0;
   color: #ccc;
 }
+.results-grid {
+  overflow-y: visible !important;
+  max-height: none !important;
+}
 
 /* Message if no results */
 #results p {
