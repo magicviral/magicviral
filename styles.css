@@ -119,10 +119,6 @@ h1 {
   margin: 5px 0;
   font-size: 0.9rem;
 }
-.results-grid {
-  overflow-y: visible !important;
-  max-height: none !important;
-}
 
 /* Responsive layout for smaller screens */
 @media (max-width: 900px) {
