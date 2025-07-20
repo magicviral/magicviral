@@ -10,50 +10,34 @@
   <div class="container">
     <h1>YouTube Viral Search</h1>
 
-    <form id="searchForm" onsubmit="event.preventDefault(); searchVideos();">
-      <div class="form-row">
-        <div class="form-group">
-          <label for="searchQuery">Search Query:</label>
-          <input type="text" id="searchQuery" placeholder="Enter keywords" value="viral ai faceless" />
-        </div>
+    <label for="topicSelect">Topic:</label>
+    <select id="topicSelect">
+      <option value="music">Music</option>
+      <option value="gaming">Gaming</option>
+      <option value="news">News</option>
+      <option value="ai">AI</option>
+      <option value="faceless youtuber">Faceless YouTuber</option>
+      <option value="technology">Technology</option>
+    </select>
 
-        <div class="form-group">
-          <label for="topicSelect">Topic (YouTube Category):</label>
-          <select id="topicSelect"></select>
-        </div>
+    <label for="uploadDate">Upload Date:</label>
+    <select id="uploadDate">
+      <option value="">Any Time</option>
+      <option value="today">Today</option>
+      <option value="this_week">Last 7 Days</option>
+      <option value="this_month">Last 30 Days</option>
+    </select>
 
-        <div class="form-group">
-          <label for="uploadDate">Upload Date:</label>
-          <select id="uploadDate">
-            <option value="">Any Time</option>
-            <option value="today">Today</option>
-            <option value="this_week">Last 7 Days</option>
-            <option value="this_month">Last 30 Days</option>
-          </select>
-        </div>
-      </div>
+    <label for="minViews">Min Views:</label>
+    <input type="number" id="minViews" placeholder="e.g. 10000" value="1000" />
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="minViews">Min Views:</label>
-          <input type="number" id="minViews" placeholder="e.g. 10000" value="1000" />
-        </div>
+    <label for="minSubscribers">Min Subscribers:</label>
+    <input type="number" id="minSubscribers" placeholder="e.g. 0" value="0" />
 
-        <div class="form-group">
-          <label for="minSubscribers">Min Subscribers:</label>
-          <input type="number" id="minSubscribers" placeholder="e.g. 0" value="0" />
-        </div>
+    <label for="maxSubscribers">Max Subscribers:</label>
+    <input type="number" id="maxSubscribers" placeholder="e.g. 10000" value="10000" />
 
-        <div class="form-group">
-          <label for="maxSubscribers">Max Subscribers:</label>
-          <input type="number" id="maxSubscribers" placeholder="e.g. 10000" value="10000" />
-        </div>
-      </div>
-
-      <div class="form-row full-width">
-        <button type="submit">Search</button>
-      </div>
-    </form>
+    <button onclick="searchVideos()">Search</button>
 
     <div id="results" class="results-grid"></div>
   </div>
