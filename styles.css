@@ -75,10 +75,10 @@ button:hover {
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   justify-items: center;
-  max-height: calc(5 * 240px);
-  overflow-y: auto;
+  /* Remove max-height and overflow so all results show without scroll */
   padding-right: 10px;
 }
+
 
 @media (max-width: 900px) {
   .results-grid {
