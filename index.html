@@ -10,29 +10,39 @@
   <div class="container">
     <h1>YouTube Viral Search</h1>
 
-    <label for="uploadDate">Upload Date:</label>
-    <select id="uploadDate">
-      <option value="">Any Time</option>
-      <option value="today">Today</option>
-      <option value="this_week">Last 7 Days</option>
-      <option value="this_month">Last 30 Days</option>
-    </select>
+    <div class="input-row">
+      <label for="uploadDate">Upload Date:</label>
+      <select id="uploadDate">
+        <option value="this_week" selected>Last 7 Days</option>
+        <option value="today">Today</option>
+        <option value="this_month">Last 30 Days</option>
+        <option value="">Any Time</option>
+      </select>
+    </div>
 
-    <label for="minViews">Min Views:</label>
-    <input type="number" id="minViews" placeholder="e.g. 10000" />
+    <div class="input-row">
+      <label for="minViews">Min Views:</label>
+      <input type="number" id="minViews" placeholder="e.g. 10000" value="1000" />
+    </div>
 
-    <label for="minSubscribers">Min Subscribers:</label>
-    <input type="number" id="minSubscribers" placeholder="e.g. 1000" />
+    <div class="input-row">
+      <label for="minSubscribers">Min Subscribers:</label>
+      <input type="number" id="minSubscribers" placeholder="Min Subscribers" value="0" />
+    </div>
 
-    <label for="maxSubscribers">Max Subscribers:</label>
-    <input type="number" id="maxSubscribers" placeholder="e.g. 1000000" />
+    <div class="input-row">
+      <label for="maxSubscribers">Max Subscribers:</label>
+      <input type="number" id="maxSubscribers" placeholder="Max Subscribers" value="10000" />
+    </div>
 
-    <label for="sortOrder">Sort by Views:</label>
-    <select id="sortOrder">
-      <option value="">No Sorting</option>
-      <option value="views_desc">Views: High to Low</option>
-      <option value="views_asc">Views: Low to High</option>
-    </select>
+    <div class="input-row">
+      <label for="sortBy">Sort By:</label>
+      <select id="sortBy">
+        <option value="viewCountAsc" selected>Views: Low to High</option>
+        <option value="viewCountDesc">Views: High to Low</option>
+        <option value="dateDesc">Upload Date: Newest</option>
+      </select>
+    </div>
 
     <button onclick="searchVideos()">Search</button>
 
