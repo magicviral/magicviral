@@ -1,4 +1,4 @@
-const API_KEY = "AIzaSyCetq-_5OXP1s0CAs89CweMbnvIkMzmWZg"; // Replace with your actual YouTube API key
+const API_KEY = "AIzaSyC1UB6mBvdFTzXhX8eLBpvJReZ_VEpbmHw"; // Replace with your actual YouTube API key
 
 const YOUTUBE_CATEGORIES = {
   1: "Film & Animation",
