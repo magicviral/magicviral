@@ -108,12 +108,26 @@ button:hover {
   transform: scale(1.03);
 }
 
-.result-card img {
-  width: 320px;
-  height: 180px;
-  object-fit: cover;
+.result-card {
+  background-color: #222; /* dark background for contrast */
+  color: white;           /* all text white */
   border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 320px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  transition: transform 0.2s ease;
 }
+
+.result-card * {
+  color: white !important; /* force ALL text inside to be white */
+}
+
+.result-card a {
+  color: inherit; /* links inherit white */
+  text-decoration: none;
+}
+
 
 .result-card .video-info {
   margin-top: 10px;
@@ -132,7 +146,7 @@ button:hover {
 
 #results p {
   font-size: 18px;
-  color: #f44336;
+  color: #ffffff;
   text-align: center;
   margin-top: 20px;
 }

@@ -87,7 +87,6 @@ async function searchVideos() {
 
   const publishedAfter = getPublishedAfter(uploadDate);
 
-  // Build search URL
   const searchUrl = new URL("https://www.googleapis.com/youtube/v3/search");
   searchUrl.searchParams.set("key", API_KEY);
   searchUrl.searchParams.set("q", query);
@@ -109,24 +108,37 @@ async function searchVideos() {
       return;
     }
 
-    // Limit to max 15 results (3 columns x 5 rows)
     const maxResultsToShow = 15;
     const itemsToShow = data.items.slice(0, maxResultsToShow);
+    const videoIds = itemsToShow.map(item => item.id.videoId).join(',');
+
+    // Fetch video statistics
+    const videoStatsUrl = new URL("https://www.googleapis.com/youtube/v3/videos");
+    videoStatsUrl.searchParams.set("key", API_KEY);
+    videoStatsUrl.searchParams.set("id", videoIds);
+    videoStatsUrl.searchParams.set("part", "statistics");
+
+    const videoStatsRes = await fetch(videoStatsUrl);
+    const videoStatsData = await videoStatsRes.json();
+    const videoStatsMap = {};
+    for (const item of videoStatsData.items) {
+      videoStatsMap[item.id] = item.statistics;
+    }
 
     resultsContainer.innerHTML = "";
 
-    // For each video, get channel details (for subscriber count, channel creation date)
     for (const item of itemsToShow) {
       const vid = item.id.videoId;
       const snippet = item.snippet;
       const channelId = snippet.channelId;
+      const viewCount = parseInt(videoStatsMap[vid]?.viewCount || 0);
+
+      if (viewCount < minViews) continue;
 
       const channelDetails = await getChannelDetails(channelId);
 
-      // Check subscriber count filtering
       let subsCount = 0;
       let channelCreatedDate = "N/A";
-
       if (channelDetails) {
         subsCount = parseInt(channelDetails.statistics.subscriberCount) || 0;
         channelCreatedDate = new Date(channelDetails.snippet.publishedAt).toLocaleDateString();
@@ -135,7 +147,6 @@ async function searchVideos() {
       if (subsCount < minSubs) continue;
       if (maxSubs !== 0 && subsCount > maxSubs) continue;
 
-      // Build video card
       const card = document.createElement("div");
       card.className = "result-card";
 
@@ -145,6 +156,7 @@ async function searchVideos() {
           <div class="video-info">
             <h3>${snippet.title}</h3>
             <p>Channel: ${snippet.channelTitle}</p>
+            <p>Views: ${viewCount.toLocaleString()}</p>
             <p>Subscribers: ${subsCount.toLocaleString()}</p>
             <p>Channel Created: ${channelCreatedDate}</p>
             <p>Published: ${new Date(snippet.publishedAt).toLocaleDateString()}</p>
@@ -156,13 +168,14 @@ async function searchVideos() {
     }
 
     if (resultsContainer.innerHTML.trim() === "") {
-      resultsContainer.innerHTML = `<p>No results matching subscriber filters.</p>`;
+      resultsContainer.innerHTML = `<p>No results matching filters.</p>`;
     }
 
   } catch (error) {
     resultsContainer.innerHTML = `<p>Error fetching data: ${error.message}</p>`;
   }
 }
+
 
 window.onload = () => {
   populateCategorySelect();
